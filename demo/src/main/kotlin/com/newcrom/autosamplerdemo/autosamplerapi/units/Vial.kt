@@ -1,4 +1,6 @@
-package com.newcrom.autosamplerdemo.autosamplerapi
+package com.newcrom.autosamplerdemo.autosamplerapi.units
+
+import com.newcrom.autosamplerdemo.autosamplerapi.base.SerialDeviceBase
 
 
 enum class VialState {
@@ -14,6 +16,12 @@ enum class VialErrors {
 
 const val VIAL = "E1"
 
+const val VIAL_HOME = 0
+const val VIAL_WASHING = 999
+
+const val VIAL_CALIBRATE = 10001
+const val VIAL_ABORT = 10002
+
 class Vial(private val serialDevice: SerialDeviceBase) {
     public var home: Boolean = false
     public var washing: Boolean = false
@@ -26,12 +34,20 @@ class Vial(private val serialDevice: SerialDeviceBase) {
         parse(serialDevice.set(VIAL, vial))
     }
 
-    public fun calibrate() {
-        parse(serialDevice.set(VIAL, 10001))
+    public fun home() {
+        parse(serialDevice.set(VIAL, VIAL_HOME))
     }
 
-    public fun abort(vial: Int) {
-        parse(serialDevice.set(VIAL, 10002))
+    public fun washing() {
+        parse(serialDevice.set(VIAL, VIAL_WASHING))
+    }
+
+    public fun calibrate() {
+        parse(serialDevice.set(VIAL, VIAL_CALIBRATE))
+    }
+
+    public fun abort() {
+        parse(serialDevice.set(VIAL, VIAL_ABORT))
     }
 
     public fun update() {
@@ -62,11 +78,11 @@ class Vial(private val serialDevice: SerialDeviceBase) {
                 state = VialState.SEARCHING
                 number = vial - 20000
             }
-            vial in 0..40 -> {              // Fixed on vial or fixed at home
+            vial in 0..999 -> {              // Fixed on vial or fixed at home
                 state = VialState.READY
                 when (vial) {
-                    0 -> home = true
-                    999 -> washing = true
+                    VIAL_HOME -> home = true
+                    VIAL_WASHING -> washing = true
                 }
                 number = vial
             }

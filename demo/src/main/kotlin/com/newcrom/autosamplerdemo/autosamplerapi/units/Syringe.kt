@@ -1,43 +1,54 @@
-package com.newcrom.autosamplerdemo.autosamplerapi
+package com.newcrom.autosamplerdemo.autosamplerapi.units
+
+import com.newcrom.autosamplerdemo.autosamplerapi.base.SerialDeviceBase
 
 
-enum class NeedleState {
+enum class SyringeState {
     READY,
     ERROR,
-    MOVING_UP,
-    MOVING_DOWN,
+    REFILLING,
+    DRAWING,
 }
 
-enum class NeedleErrors {
+enum class SyringeErrors {
     POSITION_UNKNOWN
 }
 
-const val NEEDLE = "F1"
+const val SYRINGE = "H1"
+const val SYRINGE_DRAW_SPEED = "H2"
+const val SYRINGE_REFILL_SPEED = "H3"
 
-class Needle(private val serialDevice: SerialDeviceBase) {
-    var top: Boolean = false
-    var offset: Int? = null
-    var state: NeedleState? = null
-    var errors: Set<NeedleErrors> = emptySet()
+const val SYRINGE_CALIBRATE = 10001
+const val SYRINGE_ABORT = 10002
 
-    public fun move(offset: Int) {  // 0 - top
-        set(offset)
+class Syringe(private val serialDevice: SerialDeviceBase) {
+    var empty: Boolean = false
+    var position: Int? = null
+    var drawSpeed: Int? = null
+    var refillSpeed: Int? = null
+    var state: SyringeState? = null
+    var errors: Set<SyringeErrors> = emptySet()
+
+    public fun move(position: Int, drawSpeed: Int, refillSpeed: Int) {  // 0 - empty
+        this.drawSpeed = serialDevice.set(SYRINGE_DRAW_SPEED, drawSpeed)
+        this.refillSpeed = serialDevice.set(SYRINGE_REFILL_SPEED, refillSpeed)
+        set(position)
     }
 
     public fun calibrate() {
-        set(10001)
+        set(SYRINGE_CALIBRATE)
     }
 
-    public fun abort(vial: Int) {
-        set(10002)
+    public fun abort() {
+        set(SYRINGE_ABORT)
     }
 
     public fun update() {
-        parse(serialDevice.getInt(NEEDLE))
+        parse(serialDevice.getInt(SYRINGE))
     }
 
     private fun set(number: Int) {
-        parse(serialDevice.set(NEEDLE, number))
+        parse(serialDevice.set(SYRINGE, number))
     }
 
     private fun parse(vial: Int?) {

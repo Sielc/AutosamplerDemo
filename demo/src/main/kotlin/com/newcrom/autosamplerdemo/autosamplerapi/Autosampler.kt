@@ -1,7 +1,12 @@
 package com.newcrom.autosamplerdemo.autosamplerapi
 
 import com.fazecast.jSerialComm.SerialPort
-import com.newcrom.autosamplerdemo.autosamplerapi.SerialDeviceBase.Companion.findPortByDescription
+import com.newcrom.autosamplerdemo.autosamplerapi.base.SerialDeviceBase
+import com.newcrom.autosamplerdemo.autosamplerapi.base.SerialDeviceBase.Companion.findPortByDescription
+import com.newcrom.autosamplerdemo.autosamplerapi.units.Needle
+import com.newcrom.autosamplerdemo.autosamplerapi.units.Syringe
+import com.newcrom.autosamplerdemo.autosamplerapi.units.Valve
+import com.newcrom.autosamplerdemo.autosamplerapi.units.Vial
 
 
 const val AUTOSAMPLER_COMMAND_GET_READY = 0
@@ -87,6 +92,8 @@ class Autosampler(port: SerialPort) {
 
     var vial = Vial(serialDevice)
     var needle = Needle(serialDevice)
+    var valve = Valve(serialDevice)
+    var syringe = Syringe(serialDevice)
 
     var state: AutosamplerState? = null
     var errors: Set<AutosamplerError>? = null
@@ -121,6 +128,8 @@ class Autosampler(port: SerialPort) {
     public fun updateLowLevel() {
         vial.update()
         needle.update()
+        valve.update()
+        syringe.update()
     }
 
     public fun update(): AutosamplerState? {

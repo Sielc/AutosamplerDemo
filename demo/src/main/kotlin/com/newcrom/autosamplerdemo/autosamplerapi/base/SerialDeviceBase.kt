@@ -1,4 +1,4 @@
-package com.newcrom.autosamplerdemo.autosamplerapi
+package com.newcrom.autosamplerdemo.autosamplerapi.base
 
 import com.fazecast.jSerialComm.SerialPort
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg
